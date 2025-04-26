@@ -8,14 +8,16 @@ function Layout() {
   const {user, isAuthenticated} = useAuth0()
 
   return (<>
-    <header className="d-flex justify-content-between header p-2 bg-dark text-white">
-      <h3>Charity Match </h3>
+    <header className="d-flex justify-content-between header p-2 header-bg text-black">
+      <div>
+        <h3>Charity Match </h3>
+      </div>
+      
       <div >
-        <LoginButton/>
-        <LogoutButton/>
+        {isAuthenticated ? <LogoutButton/> : <LoginButton/>}
       </div>
     </header>
-    {isAuthenticated && <div className="d-flex justify-content-end me-3 bg-light">
+    {isAuthenticated && <div className="d-flex justify-content-end me-3 trsp-bg">
       <div>{user.email}</div>  
     </div>}
 

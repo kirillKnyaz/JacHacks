@@ -6,13 +6,16 @@ import ProtectedRoute from "./ProtectedRoute";
 import DashboardPage from "./DashboardPage";
 import CallbackPage from "./CallbackPage";
 import Layout from "./Layout";
+import HomePage from "./HomePage";
 
 function App() {
   return (
     <Router>
-      <Routes>
+      <div className="app-bg">
+        <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/" element={<LoginPage />} />
+        <Route index element={<HomePage />} />  {/* HomePage is now the index route */}
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/callback" element={<CallbackPage />} />
           <Route path="/dashboard" element={<ProtectedRoute>
@@ -21,6 +24,8 @@ function App() {
           <Route path="/logout" element={<div className="m-2">You have been logged out!</div>} />
         </Route>
       </Routes>
+      </div>
+      
     </Router>
   );
 }
