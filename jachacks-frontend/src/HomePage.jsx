@@ -14,7 +14,7 @@ const HomePage = () => {
       </p>
       <div className="mt-4 text-center">
          
-        <link className="btn btn-gradient btn-lg">Take the Quiz</link> {/* Add Quiz Button */}
+        <button className="btn btn-gradient btn-lg">Take the Quiz</button> {/* Add Quiz Button */}
       </div>
     </div>
   </>);
