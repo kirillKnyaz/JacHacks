@@ -14,5 +14,4 @@ public class UserEntity {
 
     private String name;
     private String auth0_user_id;
-    private String interests;
 }
