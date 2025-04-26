@@ -40,24 +40,36 @@
 }
 
 .btn-gradient {
-  background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+  background: #0d6efd;
   border: none;
   color: white;
 }
 
 .btn-gradient:hover {
-  opacity: 0.9;
+  opacity: 1;
 }
 
-.page-background {
-  min-height: 100vh;
-  width: 100%;
+.btn-home {
+  background-color: transparent;
+}
+
+.btn-home:hover {
+  background-color: #0d6efd;
+  color: white;
+
+}
+
+.header-bg {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.trsp-bg {
+  background-color: transparent;
+}
+
+.app-bg{
   background: linear-gradient(90deg, #92fe9d, #00c9ff);
   background-repeat: no-repeat;
   background-size: cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
-
 
