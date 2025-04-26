@@ -40,3 +40,26 @@
 .read-the-docs {
   color: #888;
 }
+
+.btn-gradient {
+  background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+  border: none;
+  color: white;
+}
+
+.btn-gradient:hover {
+  opacity: 0.9;
+}
+
+.page-background {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(90deg, #92fe9d, #00c9ff);
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+

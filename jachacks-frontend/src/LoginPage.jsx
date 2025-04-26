@@ -14,7 +14,7 @@ const LoginPage = () => {
             <label className="form-label">Password</label>
             <input type="password" className="form-control" placeholder="Enter your password" required />
           </div>
-          <button type="submit" className="btn btn-primary w-100 mb-3">Login</button>
+          <button type="submit" className="btn btn-gradient w-100 mb-3">Login</button>
         </form>
         <div className="text-center">
           <small>
