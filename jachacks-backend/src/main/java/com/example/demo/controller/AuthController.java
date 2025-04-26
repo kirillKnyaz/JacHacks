@@ -37,11 +37,8 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Map<String, Object>> register(@AuthenticationPrincipal Jwt jwt) {
         try {
-            String token = authHeader.replace("Bearer ", "");  // Extract token
-            Jwt jwt = jwtDecoder.decode(token);  // Extract user info from token
-
             UserDTO user = UserService.registerUser(jwt);
 
             return ResponseEntity.ok(Map.of("message","User registered successfully!"));

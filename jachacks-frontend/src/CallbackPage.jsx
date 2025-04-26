@@ -26,7 +26,7 @@ const CallbackPage = () => {
           },
         }).then((response) => {
           console.log("User registered successfully:", response.data);
-          navigate("/dashboard");
+          navigate("/home");
         }).catch((error) => {
           console.error("Error registering user:", error); // Logout in case of error
         })
