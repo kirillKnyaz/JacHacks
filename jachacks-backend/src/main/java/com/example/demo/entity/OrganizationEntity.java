@@ -14,5 +14,6 @@ public class OrganizationEntity {
     private Long id;
 
     private String name;
+
     private String description;
 }

@@ -13,5 +13,6 @@ public class UserEntity {
     private Long id;
 
     private String name;
-    private String auth0_user_id;
+    private String email;
+    private String auth0Id;
 }
