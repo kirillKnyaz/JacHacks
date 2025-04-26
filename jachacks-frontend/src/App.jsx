@@ -18,6 +18,7 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute>
             <DashboardPage/>
           </ProtectedRoute>}/>
+          <Route path="/logout" element={<div className="m-2">You have been logged out!</div>} />
         </Route>
       </Routes>
     </Router>
