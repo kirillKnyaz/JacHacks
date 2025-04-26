@@ -8,7 +8,7 @@ const CallbackPage = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      navigate("/dashboard"); // Redirect after successful login
+      navigate("/home"); // Redirect after successful login
     }
   }, [isLoading]);
 

@@ -49,6 +49,16 @@
   opacity: 1;
 }
 
+.btn-home {
+  background-color: transparent;
+}
+
+.btn-home:hover {
+  background-color: #0d6efd;
+  color: white;
+
+}
+
 .header-bg {
   background-color: rgba(255, 255, 255, 0.4);
 }

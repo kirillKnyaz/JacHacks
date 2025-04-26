@@ -7,6 +7,7 @@ import DashboardPage from "./DashboardPage";
 import CallbackPage from "./CallbackPage";
 import Layout from "./Layout";
 import HomePage from "./HomePage";
+import Quiz from "./Quiz";
 
 function App() {
   return (
@@ -18,10 +19,11 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/callback" element={<CallbackPage />} />
-          <Route path="/dashboard" element={<ProtectedRoute>
-            <DashboardPage/>
+          <Route path="/home" element={<ProtectedRoute>
+            <HomePage />
           </ProtectedRoute>}/>
           <Route path="/logout" element={<div className="m-2">You have been logged out!</div>} />
+          <Route path="/quiz" element={<Quiz />} />
         </Route>
       </Routes>
       </div>
