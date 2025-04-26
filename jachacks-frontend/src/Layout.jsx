@@ -16,7 +16,7 @@ function Layout() {
       </div>
     </header>
     {isAuthenticated && <div className="d-flex justify-content-end me-3 bg-light">
-      <div>{user.email}</div>  
+      <div>{user.email}</div>
     </div>}
 
     <Outlet />
