@@ -1,24 +1,33 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-function RegisterPage() {
+const RegisterPage = () => {
   return (
-    <div className="bg-white p-8 rounded shadow-md w-80">
-      <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-
-      <form className="flex flex-col">
-        <input type="text" placeholder="Name" className="p-2 mb-4 border rounded" required />
-        <input type="email" placeholder="Email" className="p-2 mb-4 border rounded" required />
-        <input type="password" placeholder="Password" className="p-2 mb-4 border rounded" required />
-        <button type="submit" className="bg-green-500 text-white py-2 rounded hover:bg-green-600">Register</button>
-        {/* Green button for register */}
-      </form>
-
-      <p className="mt-4 text-center">
-        Already have an account? <Link to="/login" className="text-green-500">Login</Link>
-      </p>
-      {/* Link back to Login page */}
+    <div className="container d-flex justify-content-center align-items-center vh-100 position-absolute top-50 start-50 translate-middle">
+      <div className="card p-4 shadow" style={{ minWidth: '350px' }}>
+        <h2 className="mb-4 text-center">Register</h2>
+        <form>
+          <div className="mb-3">
+            <label className="form-label">Full Name</label>
+            <input type="text" className="form-control" placeholder="Enter your full name" required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Email address</label>
+            <input type="email" className="form-control" placeholder="Enter your email" required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Password</label>
+            <input type="password" className="form-control" placeholder="Enter your password" required />
+          </div>
+          <button type="submit" className="btn btn-primary w-100 mb-3">Register</button>
+        </form>
+        <div className="text-center">
+          <small>
+            Already have an account? <Link to="/login">Login</Link>
+          </small>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default RegisterPage;

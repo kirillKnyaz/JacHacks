@@ -65,4 +65,20 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+
+  /* Fix full width + height */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa; /* light gray background if you want */
+}
+
 }
