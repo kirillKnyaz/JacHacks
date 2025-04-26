@@ -1,6 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import CategorySelector from './CategorySelector'; // Assure-toi que le chemin est correct
 import 'bootstrap/dist/css/bootstrap.min.css'; // Si ce n'est pas déjà importé
+import DonationPage from './DonationPage';
 
 function Quiz() {
   return (
@@ -47,6 +49,8 @@ function Quiz() {
       />
       {/* Autres éléments de ton quiz (questions, etc.) */}
       <button className="btn btn-primary mt-3">Confirm</button>
+      <br />
+      <Link to={"/donation"} className='btn btn-primary mt-3'>Temp</Link>
     </div>
     </div>
     
