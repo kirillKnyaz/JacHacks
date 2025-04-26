@@ -3,33 +3,25 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+  /*My own code-ish*/
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import LoginPage from "./LoginPage";
+import RegisterPage from "./RegisterPage";
 
+function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>  {/* React Router needs to wrap your whole app */}
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        {/* This is a container to center everything nicely */}
+        
+        <Routes> {/* Routes component will manage which page to show */}
+          <Route path="/login" element={<LoginPage />} /> {/* If URL is /login show LoginPage */}
+          <Route path="/register" element={<RegisterPage />} /> {/* If URL is /register show RegisterPage */}
+          <Route path="*" element={<LoginPage />} /> {/* If URL is anything else, default to LoginPage */}
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
 export default App
