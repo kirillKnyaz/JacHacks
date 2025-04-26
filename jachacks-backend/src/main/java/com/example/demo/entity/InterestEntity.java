@@ -5,13 +5,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "interests")
+public class InterestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private String auth0_user_id;
 }

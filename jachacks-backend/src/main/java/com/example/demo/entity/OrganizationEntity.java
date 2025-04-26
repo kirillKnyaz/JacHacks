@@ -15,7 +15,4 @@ public class OrganizationEntity {
 
     private String name;
     private String description;
-
-    @ElementCollection
-    private List<String> interests;  // Updated to List<String> for multiple interests
 }
