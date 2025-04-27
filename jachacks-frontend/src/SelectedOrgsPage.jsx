@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import useAuthApi from './assets/api';
+import { useNavigate } from 'react-router-dom';
 
 function SelectedOrgsPage() {
   const { user } = useAuth0(); // Assure-toi que tu as accès à l'utilisateur ici
   const authApi = useAuthApi();
+
+  const navigate = useNavigate();
+
+  const [topOrganizations, setTopOrganizations] = useState([]);
+  const [topOrganizationsLoading, setTopOrganizationsLoading] = useState(true);
+  const [userSavedOrganizations, setUserSavedOrganizations] = useState([]);
 
   useEffect(() => {
     reloadOrganizations();
@@ -26,25 +33,27 @@ function SelectedOrgsPage() {
     });
   }
 
-  const [topOrganizations, setTopOrganizations] = useState([]);
-  const [topOrganizationsLoading, setTopOrganizationsLoading] = useState(true);
+  
+  const saveOrganization = (org) => {
+    console.log("Saving organization:", org);
 
-  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
-  const [otherOrgs, setOtherOrgs] = useState([]);
+    authApi.post('/user-organization/add', {organizationId: org.id}).then((response) => {
+      console.log("Organization saved successfully:", response.data);
+      setUserSavedOrganizations([...userSavedOrganizations, org]);
+    }).catch((error) => {
+      console.error("Error saving organization:", error);
+    });
+  }
 
-  const handleAddToMainListDirectly = (orgToAdd) => {
-    if (!selectedOrganizations.some(org => org.name === orgToAdd.name)) {
-      setSelectedOrganizations([...selectedOrganizations, orgToAdd]);
-      setOtherOrgs(otherOrgs.filter(org => org.name !== orgToAdd.name));
-    }
-  };
-
-  const handleRemoveSelectedOrg = (orgToRemove) => {
-    setSelectedOrganizations(selectedOrganizations.filter(org => org.name !== orgToRemove.name));
-    setOtherOrgs([...otherOrgs, orgToRemove]);
-  };
-
-  const isAlreadySelected = (org) => selectedOrganizations.some(selectedOrg => selectedOrg.name === org.name);
+  const removeOrganization = (org) => {
+    console.log("Removing organization:", org);
+    authApi.delete('/user-organization/remove', {data:{organizationId: org.id}}).then((response) => {
+      console.log("Organization removed successfully:", response.data);
+      setUserSavedOrganizations(userSavedOrganizations.filter((o) => o.id !== org.id));
+    }).catch((error) => {
+      console.error("Error removing organization:", error);
+    });
+  }
 
   return (
     <div className="container mt-5">
@@ -53,8 +62,9 @@ function SelectedOrgsPage() {
         <p>No organization has been selected yet.</p>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
-          {topOrganizations.map((org, index) => (
-            <div className="col" key={index}>
+          {topOrganizations.map((org, index) => {
+            const isAlreadySelected = userSavedOrganizations.some((o) => o.id === org.id);
+            return (<div className="col" key={index}>
               <div className="card h-100 rounded-card position-relative">
                 <div className="card-body">
                   <h5 className="card-title">{org.name}</h5>
@@ -62,63 +72,21 @@ function SelectedOrgsPage() {
                 </div>
                 <button
                   className="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2"
-                  onClick={() => handleRemoveSelectedOrg(org)}
+                  onClick={() => {
+                    if (!isAlreadySelected) saveOrganization(org);
+                    else removeOrganization(org);
+                  }}
                   title="Remove from list"
-                >+</button>
+                >{isAlreadySelected ? <FontAwesomeIcon icon={faCheck} />: "+"}</button>
               </div>
-            </div>
-          ))}
+            </div>)
+          })}
         </div>
       )}
 
       <hr className="my-5" />
 
-      {/* <h2>Other organizations you might like</h2>
-      <p>Click the plus icon to add directly to your list.</p>
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
-        {otherOrgs.map((org, index) => (
-          <div className="col" key={index}>
-            <div className="card h-100 rounded-card position-relative">
-              <div className="card-body">
-                <h5 className="card-title">{org.name}</h5>
-                <p className="card-text">{org.description}</p>
-              </div>
-              {!isAlreadySelected(org) && (
-                <div className="position-absolute top-0 end-0 m-2">
-                  <FontAwesomeIcon
-                    icon={faPlus}
-                    className="text-success"
-                    style={{ cursor: 'pointer' }}
-                    title="Add to my list"
-                    onClick={() => handleAddToMainListDirectly(org)}
-                  />
-                </div>
-              )}
-              {isAlreadySelected(org) && (
-                <div className="position-absolute top-0 end-0 m-2">
-                  <FontAwesomeIcon
-                    icon={faPlus}
-                    className="text-primary"
-                    title="Already in your list"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div> */}
-
-      {/* <div className="d-flex flex-column align-items-start">
-        <p className="text-muted fs-5 mb-2">Please verify your selection before confirming.</p>
-        <button
-          className="btn btn-primary"
-          disabled={selectedOrganizations.length === 0}
-          style={{ width: 'auto' }}
-        >
-          <h4>Confirm</h4>
-        </button>
-        <br />
-      </div> */}
+      <button className="btn btn-primary mb-3" onClick={() => navigate('/donation')}>Continue</button>
     </div>
   );
 }
