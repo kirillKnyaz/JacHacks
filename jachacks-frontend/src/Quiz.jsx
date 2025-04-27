@@ -47,7 +47,7 @@ function Quiz() {
       console.log("Interest IDs:", interestIds);
       authApi.post('/user-interests/add/multiple', interestIds).then((response) => {
         console.log("Interests added successfully:", response.data);
-        navigate("/donation");
+        navigate("/selectedOrgs");
       }).catch((error) => {
         console.error("Error adding interests:", error);
       }).finally(() => {
