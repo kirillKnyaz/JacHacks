@@ -4,9 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import useAuthApi from './assets/api';
 
 function SelectedOrgsPage() {
   const { user } = useAuth0(); // Assure-toi que tu as accès à l'utilisateur ici
+  const authApi = useAuthApi();
 
   useEffect(() => {
     reloadOrganizations();
@@ -14,7 +16,7 @@ function SelectedOrgsPage() {
 
   const reloadOrganizations = () => {
     setTopOrganizationsLoading(true);
-    axios.get(`http://localhost:8080/public/organization/top-matching/${user.sub}`).then((response) => {
+    authApi.get(`/user-organization/top-matching/${user.sub}`).then((response) => {
       console.log("Top organizations:", response.data);
       setTopOrganizations(response.data.organizations);
     }).catch((error) => {
@@ -46,12 +48,12 @@ function SelectedOrgsPage() {
 
   return (
     <div className="container mt-5">
-      <h2>Selected Organizations</h2>
+      <h2>Top Organizations for You</h2>
       {topOrganizations.length === 0 ? (
         <p>No organization has been selected yet.</p>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
-          {selectedOrganizations.map((org, index) => (
+          {topOrganizations.map((org, index) => (
             <div className="col" key={index}>
               <div className="card h-100 rounded-card position-relative">
                 <div className="card-body">
@@ -59,12 +61,10 @@ function SelectedOrgsPage() {
                   <p className="card-text">{org.description}</p>
                 </div>
                 <button
-                  className="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
+                  className="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2"
                   onClick={() => handleRemoveSelectedOrg(org)}
                   title="Remove from list"
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
+                >+</button>
               </div>
             </div>
           ))}
@@ -73,7 +73,7 @@ function SelectedOrgsPage() {
 
       <hr className="my-5" />
 
-      <h2>Other organizations you might like</h2>
+      {/* <h2>Other organizations you might like</h2>
       <p>Click the plus icon to add directly to your list.</p>
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
         {otherOrgs.map((org, index) => (
@@ -106,11 +106,9 @@ function SelectedOrgsPage() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
-      <hr className="my-5" />
-
-      <div className="d-flex flex-column align-items-start">
+      {/* <div className="d-flex flex-column align-items-start">
         <p className="text-muted fs-5 mb-2">Please verify your selection before confirming.</p>
         <button
           className="btn btn-primary"
@@ -120,7 +118,7 @@ function SelectedOrgsPage() {
           <h4>Confirm</h4>
         </button>
         <br />
-      </div>
+      </div> */}
     </div>
   );
 }

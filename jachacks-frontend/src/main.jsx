@@ -14,9 +14,11 @@ createRoot(document.getElementById('root')).render(
       authorizationParams={{
         audience: import.meta.env.VITE_AUTH0_CUSTOM_API_AUDIENCE,
         redirect_uri: window.location.origin + '/callback',
+        scope: 'openid profile email offline_access'
       }}
       cacheLocation='localstorage'
       useRefreshTokens={true}
+
     >
       <App />
     </Auth0Provider>
