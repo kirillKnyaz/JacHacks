@@ -10,6 +10,7 @@ import com.example.demo.service.InterestService;
 import com.example.demo.service.UserInterestService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user-interests")
@@ -34,7 +36,7 @@ public class UserInterestController {
 
     // Add a user's interest
     @PostMapping("/add/multiple")
-    public UserInterestEntity addUserInterest(@RequestBody List<Long> interestIds) {
+    public ResponseEntity<Map<String, String>> addUserInterest(@RequestBody List<Long> interestIds) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication instanceof JwtAuthenticationToken jwtAuth) {
@@ -43,9 +45,17 @@ public class UserInterestController {
 
             UserEntity user = UserService.getUserByAuth0Id(userId);
             if (user == null) {
-                throw new RuntimeException("User not found");
+                return ResponseEntity.status(404).body(Map.of("error", "User not found"));
             }
-            
 
+            try {
+                UserInterestService.addUserInterests(user, interestIds);
+                return ResponseEntity.ok(Map.of("message", "Interests added successfully"));
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
+            }
+        } else {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
         }
     }
+}

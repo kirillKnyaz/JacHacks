@@ -4,28 +4,42 @@ import CategorySelector from './CategorySelector'; // Assure-toi que le chemin e
 import 'bootstrap/dist/css/bootstrap.min.css'; // Si ce n'est pas déjà importé
 import DonationPage from './DonationPage';
 import axios from 'axios';
+import useAuthApi from './assets/api';
 
 function Quiz() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+  const authApi = useAuthApi();
 
   useEffect(() => {
     axios.get('http://localhost:8080/public/interests/all').then((response) => {
       console.log(response.data);
-       // Assuming the response data is an array of categories
-       // If the structure is different, adjust accordingly
       setCategories(response.data);
-       // Assuming each category has a 'title' property
     }).catch((error) => {
       console.error("Error fetching categories:", error);
+    }).finally(() => {
+      setCategoriesLoading(false);
     });
   }, []);
 
-  useEffect(() => {
-    console.log("Selected categories:", selectedCategories);
-  }, [selectedCategories]);
+  const confirmCategoriesSelection = () => {
+    if (selectedCategories.length > 0) {
+      console.log("Selected categories:", selectedCategories);
 
-
+      let interestIds = selectedCategories.map(category => category.id);
+      console.log("Interest IDs:", interestIds);
+      authApi.post('/user-interests/add/multiple', interestIds).then((response) => {
+        console.log("Interests added successfully:", response.data);
+        // Rediriger vers la page de donation ou faire autre chose
+      }).catch((error) => {
+        console.error("Error adding interests:", error);
+      });
+    } else {
+      alert("Please select at least one category.");
+    }
+  }
 
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center min-vh-100">
@@ -36,6 +50,7 @@ function Quiz() {
         categories={categories}
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
+        loading={categoriesLoading}
       />
       {/* Autres éléments de ton quiz (questions, etc.) */}
       {/* {selectedCategories.length > 0 && (
@@ -48,7 +63,7 @@ function Quiz() {
           </ul>
         </div>
       )} */}
-      <button className="btn btn-primary mt-3">Confirm</button>
+      <button className="btn btn-primary mt-3" onClick={confirmCategoriesSelection}>Confirm</button>
       <br />
       <Link to={"/donation"} className='btn btn-primary mt-3'>Temp</Link>
     </div>

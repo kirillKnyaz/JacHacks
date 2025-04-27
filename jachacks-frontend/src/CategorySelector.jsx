@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Importez le CSS de Bootstrap
 
-function CategorySelector({ categories, selectedCategories, setSelectedCategories }) {
+function CategorySelector({ categories, selectedCategories, setSelectedCategories, loading }) {
 
   const handleCategoryClick = (category) => {
     if (selectedCategories.includes(category)) {
@@ -24,7 +24,7 @@ function CategorySelector({ categories, selectedCategories, setSelectedCategorie
     <div>
       <h4>Choose up to 5:</h4>
       <div className="d-flex flex-wrap gap-2">
-        {categories.map((category) => (
+        {!loading ? <>{categories.map((category) => (
           <button
             key={category.id}
             type="button"
@@ -36,7 +36,12 @@ function CategorySelector({ categories, selectedCategories, setSelectedCategorie
           >
             {category.name}
           </button>
-        ))}
+        ))}</> : <>
+          {Array.from({ length: 11 }, (_, index) => (
+            <button className='btn btn-outline-primary disabled placelhoder' style={{height: "38px", width: "4rem"}} key={index}>
+            </button>
+          ))}
+        </>}
       </div>
     </div>
   );
