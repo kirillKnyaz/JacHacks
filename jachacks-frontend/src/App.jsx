@@ -12,11 +12,12 @@ import DonationPage from "./DonationPage";
 import SelectedOrgsPage from "./SelectedOrgsPage";
 import ProfilePage from "./ProfilePage";
 import { Profiler } from "react";
+import LogoutPage from "./LogoutPage";
 
 function App() {
   return (
     <Router>
-      <div className="app-bg">
+      <div className="app-bg d-flex flex-column min-vh-100">
         <Routes>
         <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />  {/* HomePage is now the index route */}
@@ -26,7 +27,7 @@ function App() {
           <Route path="/home" element={<ProtectedRoute>
             <HomePage />
           </ProtectedRoute>}/>
-          <Route path="/logout" element={<div className="m-2">You have been logged out!</div>} />
+          <Route path="/logout" element={<LogoutPage/>} />
           <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
           <Route path="/donation" element={<ProtectedRoute><DonationPage /></ProtectedRoute>} />
           <Route path="/selectedOrgs" element={<SelectedOrgsPage />} />
