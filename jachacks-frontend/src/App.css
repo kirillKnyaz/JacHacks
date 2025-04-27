@@ -73,3 +73,6 @@
   background-size: cover;
 }
 
+.rounded-card {
+  border-radius: 20px;
+}
