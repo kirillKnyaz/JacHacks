@@ -11,6 +11,7 @@ import Quiz from "./Quiz";
 import DonationPage from "./DonationPage";
 import SelectedOrgsPage from "./SelectedOrgsPage";
 import ProfilePage from "./ProfilePage";
+import ThankYouPage from "./ThankYouPage";
 import { Profiler } from "react";
 import LogoutPage from "./LogoutPage";
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/donation" element={<ProtectedRoute><DonationPage /></ProtectedRoute>} />
           <Route path="/selectedOrgs" element={<ProtectedRoute><SelectedOrgsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/thank-you" element={<ProtectedRoute><ThankYouPage /></ProtectedRoute>} />
         </Route>
       </Routes>
       </div>
