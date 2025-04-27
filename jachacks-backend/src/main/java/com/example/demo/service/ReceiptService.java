@@ -17,18 +17,24 @@ import java.util.stream.Collectors;
 public class ReceiptService {
 
     @Autowired
-    private ReceiptRepository receiptRepository;
+    private static ReceiptRepository receiptRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private static UserRepository userRepository;
 
     @Autowired
-    private OrganizationRepository organizationRepository;
+    private static OrganizationRepository organizationRepository;
+
+
+    public ReceiptService(ReceiptRepository receiptRepository, UserRepository userRepository, OrganizationRepository organizationRepository) {
+        ReceiptService.receiptRepository = receiptRepository;
+        ReceiptService.userRepository = userRepository;
+        ReceiptService.organizationRepository = organizationRepository;
+    }
 
     // Get all receipts for a specific user
-    public List<ReceiptDTO> getReceiptsByUser(Long userId) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public static List<ReceiptDTO> getReceiptsByUser(String userId) {
+        UserEntity user = UserService.getUserByAuth0Id(userId);
 
         List<ReceiptEntity> receipts = receiptRepository.findByUser(user);
 

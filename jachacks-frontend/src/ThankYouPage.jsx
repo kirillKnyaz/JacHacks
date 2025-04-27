@@ -1,29 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth0 } from '@auth0/auth0-react';
+import useAuthApi from './assets/api';
 
 function ThankYouPage({ donations = [] }) {
-  // Temporary donation information for testing
-  const testDonations = [
-    { organization: 'Green Planet', amount: 50 },
-    { organization: 'Education for All', amount: 30 },
-    { organization: 'Health Heroes', amount: 20 },
-  ];
+const {user} = useAuth0();
+const authApi = useAuthApi();
 
-  const displayDonations = donations.length > 0 ? donations : testDonations;
+  const [receipts, setReceipts] = useState([]);
+  const [receiptsLoading, setReceiptsLoading] = useState(true);
+
+  useEffect(() => {
+    authApi.get(`/receipts/user/${user.sub}`).then((response) => {
+      console.log("Receipts:", response.data);
+      setReceipts(response.data.receipts);
+    }).catch((error) => {
+      console.error("Error fetching receipts:", error);
+    }).finally(() => {
+      setReceiptsLoading(false);
+    });
+
+  }, [user.sub])
 
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center min-vh-100">
       <h1 className="mb-4 text-center">Thank You for Your Donation!</h1>
 
-      {displayDonations.length > 0 ? (
+      {receipts.length > 0 ? (
         <div className="card p-4 shadow w-100" style={{ maxWidth: '600px' }}>
           <h4 className="mb-3">You have donated to:</h4>
           <ul className="list-group">
-            {displayDonations.map((donation, index) => (
+            {receipts.map((donation, index) => (
               <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
                 <div>
-                  <strong>{donation.organization}</strong>
+                  <strong>{donation.organizationName}</strong>
                 </div>
                 <div>
                   ${parseFloat(donation.amount).toFixed(2)} CAD
