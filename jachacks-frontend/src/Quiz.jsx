@@ -47,7 +47,7 @@ function Quiz() {
       console.log("Interest IDs:", interestIds);
       authApi.post('/user-interests/add/multiple', interestIds).then((response) => {
         console.log("Interests added successfully:", response.data);
-        navigate("/donation");
+        navigate("/selectedOrgs");
       }).catch((error) => {
         console.error("Error adding interests:", error);
       }).finally(() => {
@@ -91,8 +91,8 @@ function Quiz() {
 
       <br />
       <div className='mt-1'>
-        <Link to={"/donation"} className='btn btn-primary'>Temp Donation</Link>
-        <Link to={"/selectedOrgs"} className='btn btn-primary ms-2'>Temp SeleOrgs</Link>
+        {/* <Link to={"/donation"} className='btn btn-primary'>Temp Donation</Link>
+        <Link to={"/selectedOrgs"} className='btn btn-primary ms-2'>Temp SeleOrgs</Link> */}
       </div>
     </div>
   </div>);
