@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import CategorySelector from './CategorySelector'; // Assure-toi que le chemin est correct
 import 'bootstrap/dist/css/bootstrap.min.css'; // Si ce n'est pas déjà importé
@@ -65,7 +65,8 @@ function Quiz() {
       )} */}
       <button className="btn btn-primary mt-3" onClick={confirmCategoriesSelection}>Confirm</button>
       <br />
-      <Link to={"/donation"} className='btn btn-primary mt-3'>Temp</Link>
+      <Link to={"/donation"} className='btn btn-primary mt-3'>Temp Donation</Link>
+      <Link to={"/selectedOrgs"} className='btn btn-primary mt-3'>Temp SeleOrgs</Link>
     </div>
     </div>
     

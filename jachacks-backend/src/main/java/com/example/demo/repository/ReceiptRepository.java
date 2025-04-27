@@ -16,3 +16,4 @@ public interface ReceiptRepository extends JpaRepository<ReceiptEntity, Long> {
     // Find all receipts for a specific organization to list all users who donated to them
     List<ReceiptEntity> findByOrganizationId(OrganizationEntity organization);
 }
+
