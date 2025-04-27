@@ -10,6 +10,8 @@ import HomePage from "./HomePage";
 import Quiz from "./Quiz";
 import DonationPage from "./DonationPage";
 import SelectedOrgsPage from "./SelectedOrgsPage";
+import ProfilePage from "./ProfilePage";
+import { Profiler } from "react";
 
 function App() {
   return (
@@ -28,6 +30,7 @@ function App() {
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/donation" element={<DonationPage />} />
           <Route path="/selectedOrgs" element={<SelectedOrgsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Routes>
       </div>
