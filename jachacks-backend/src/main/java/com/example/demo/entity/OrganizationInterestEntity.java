@@ -2,8 +2,12 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
 @Entity
 @Table(name = "organization_interests")
 public class OrganizationInterestEntity {

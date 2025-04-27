@@ -6,7 +6,15 @@ import com.example.demo.entity.InterestEntity;
 //import com.example.demo.service.UserInterestService;
 //import com.example.demo.service.UserService;
 //import com.example.demo.service.InterestService;
+import com.example.demo.service.InterestService;
+import com.example.demo.service.UserInterestService;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,27 +23,29 @@ import java.util.List;
 @RequestMapping("/user-interests")
 public class UserInterestController {
 
-//    @Autowired
-//    private UserInterestService userInterestService;
-//
-//    @Autowired
-//    private UserService userService;
-//
-//    @Autowired
-//    private InterestService interestService;
+    @Autowired
+    private UserInterestService userInterestService;
 
-//    // Add a user's interest
-//    @PostMapping("/add")
-//    public UserInterestEntity addUserInterest(@RequestParam Long userId, @RequestParam Long interestId) {
-//        UserEntity user = userService.getUserById(userId);
-//                List<InterestEntity> interests = interestService.getInterestsByNames(interestNames);
-//        return userInterestService.addUserInterest(user, interests);
-//    }
+    @Autowired
+    private UserService userService;
 
-//    // Get all interests of a user
-//    @GetMapping("/user/{userId}")
-//    public List<UserInterestEntity> getUserInterests(@PathVariable Long userId) {
-//        UserEntity user = userService.getUserById(userId);
-//        return userInterestService.getUserInterests(user);
-//    }
-}
+    @Autowired
+    private InterestService interestService;
+
+    // Add a user's interest
+    @PostMapping("/add/multiple")
+    public UserInterestEntity addUserInterest(@RequestBody List<Long> interestIds) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+            Jwt jwt = jwtAuth.getToken();
+            String userId = jwt.getSubject();
+
+            UserEntity user = UserService.getUserByAuth0Id(userId);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            
+
+        }
+    }
