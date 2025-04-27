@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.DTO.DonationDTO;
 import com.example.demo.entity.OrganizationEntity;
 import com.example.demo.entity.ReceiptEntity;
 import com.example.demo.entity.UserEntity;
@@ -28,23 +29,21 @@ public class BalanceController {
 
     // Donate to multiple organizations
     @PostMapping("/donate")
-    public String donateToOrganizations(
-            @RequestParam Long userId,
-            @RequestParam List<Long> organizationIds,
-            @RequestParam BigDecimal totalAmount) {
+    public String donateToOrganizations(@RequestBody DonationDTO donationDTO) {
+        List<Long> organizationIds = donationDTO.getOrganizationId();
+        BigDecimal totalAmount = donationDTO.getTotalAmount();
 
         if (organizationIds == null || organizationIds.isEmpty()) {
             return "Error: No organizations provided.";
         }
 
-        UserEntity user = userRepository.findById(userId)
+        UserEntity user = userRepository.findById(donationDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
 
         BigDecimal splitAmount = totalAmount.divide(
                 BigDecimal.valueOf(organizationIds.size()),
-                2, RoundingMode.HALF_UP);
-
+                2, RoundingMode.HALF_UP
+        );
 
         for (Long orgId : organizationIds) {
             OrganizationEntity organization = organizationRepository.findById(orgId)
