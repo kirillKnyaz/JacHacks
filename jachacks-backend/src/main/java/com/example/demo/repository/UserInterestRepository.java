@@ -11,4 +11,6 @@ import java.util.List;
 public interface UserInterestRepository extends JpaRepository<UserInterestEntity, Long> {
     // Custom query to find all interests of a user
     List<UserInterestEntity> findByUser(UserEntity user);
+
+    void deleteByUser(UserEntity user);
 }

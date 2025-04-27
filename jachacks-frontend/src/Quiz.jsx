@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import CategorySelector from './CategorySelector'; // Assure-toi que le chemin est correct
 import 'bootstrap/dist/css/bootstrap.min.css'; // Si ce n'est pas déjà importé
 import DonationPage from './DonationPage';
@@ -13,6 +13,8 @@ function Quiz() {
   const [saveInterestsLoading, setSaveInterestsLoading] = useState(false);
 
   const authApi = useAuthApi();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // from the db
@@ -41,7 +43,7 @@ function Quiz() {
       console.log("Interest IDs:", interestIds);
       authApi.post('/user-interests/add/multiple', interestIds).then((response) => {
         console.log("Interests added successfully:", response.data);
-        // Rediriger vers la page de donation ou faire autre chose
+        navigate("/donation");
       }).catch((error) => {
         console.error("Error adding interests:", error);
       }).finally(() => {

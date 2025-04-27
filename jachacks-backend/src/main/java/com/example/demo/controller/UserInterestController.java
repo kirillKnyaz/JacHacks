@@ -49,13 +49,26 @@ public class UserInterestController {
             }
 
             try {
-                UserInterestService.addUserInterests(user, interestIds);
+                userInterestService.addUserInterests(user, interestIds);
                 return ResponseEntity.ok(Map.of("message", "Interests added successfully"));
             } catch (RuntimeException e) {
                 return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
             }
         } else {
             return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+    }
+
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<Map<String, Object>> getUserInterests(@PathVariable("userId") String userId) {
+        try {
+            List<InterestEntity> userInterests = UserInterestService.getUserInterests(userId);
+            if (userInterests.isEmpty()) {
+                return ResponseEntity.status(404).body(Map.of("error", "No interests found for this user"));
+            }
+            return ResponseEntity.ok(Map.of("interests", userInterests));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         }
     }
 }

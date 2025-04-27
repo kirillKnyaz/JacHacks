@@ -1,11 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CategorySelector from './CategorySelector';
+import axios from 'axios';
+import useAuthApi from './assets/api.js';
 
 function ProfilePage() {
   const { user } = useAuth0();
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [saveInterestsLoading, setSaveInterestsLoading] = useState(false);
 
-  const initialPreferences = ["Environment", "Education", "Health"];
+  const authApi = useAuthApi();
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/public/interests/all').then((response) => {
+      setCategories(response.data);
+    }).catch((error) => {
+      console.error("Error fetching categories:", error);
+    }).finally(() => {
+      setCategoriesLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    authApi.get(`/user-interests/get/${user.sub}`).then((response) => {
+      setSelectedCategories(response.data.interests);
+    }).catch((error) => {
+      console.error("Error fetching user interests:", error);
+    });
+  }, []);
+
   const initialOrganizations = [
     { name: 'Green Planet', description: 'Protecting the environment.' },
     { name: 'Education for All', description: 'Accessible education worldwide.' },
@@ -17,12 +43,6 @@ function ProfilePage() {
     { name: 'Tech for Good', description: 'Using technology for positive impact.' },
   ];
 
-  const allCategories = [
-    "Animals", "Arts and Culture", "Children and Youth", "Education", "Environment", "Health", "Human Rights", "Science and Technology",
-    "Crisis Relief", "Community Development", "Veterans", "LGBTQ+ Community", "Homelessness", "Research", "Volunteer Services", "Grantmaking"
-  ];
-
-  const [preferences, setPreferences] = useState(initialPreferences);
   const [organizations, setOrganizations] = useState(initialOrganizations);
   const [suggestedOrganizations, setSuggestedOrganizations] = useState(initialSuggestedOrganizations);
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -57,13 +77,16 @@ function ProfilePage() {
     }
   };
 
-  const handleSave = () => {
-    console.log("Saving preferences:", preferences);
-    console.log("Saving organizations:", organizations);
-    console.log("Saving payment info:", { amount: paymentAmount, frequency: paymentFrequency });
-    setSavedPaymentAmount(paymentAmount);
-    setSavedPaymentFrequency(paymentFrequency);
-    alert("Changes saved! (future: send to backend)");
+  const handleSaveInterests = () => {
+    setSaveInterestsLoading(true);
+    let interestIds = selectedCategories.map(category => category.id);
+    authApi.post('/user-interests/add/multiple', interestIds).then((response) => {
+      console.log("Interests saved successfully:", response.data);
+    }).catch((error) => {
+      console.error("Error saving interests:", error);
+    }).finally(() => {
+      setSaveInterestsLoading(false);
+    });
   };
 
   const handleDiscard = () => {
@@ -99,19 +122,20 @@ function ProfilePage() {
       {/* (rest of the page remains the same) */}
 
       <div className="card p-4 mb-4">
-        <h4>Preferences ({preferences.length}/5 selected)</h4>
+        <h4>Preferences (0/5 selected)</h4>
         <div className="d-flex flex-wrap gap-2">
-          {allCategories.map((category) => (
-            <button
-              key={category}
-              className={`btn ${preferences.includes(category) ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => toggleCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
+          <CategorySelector 
+          categories={categories}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          loading={categoriesLoading}
+          />
         </div>
-        <small className="text-muted">(You can select up to 5 preferences)</small>
+        <div className='d-flex align-items-center mt-3'>
+          <button className='btn btn-primary' style={{width:"max-content"}} onClick={handleSaveInterests}>Save Prefernces</button>
+          {saveInterestsLoading && <div className="spinner-border text-primary ms-2" role="status"/>}
+        </div>
+
       </div>
 
       <div className="card p-4 mb-4">
@@ -194,7 +218,7 @@ function ProfilePage() {
       </div>
 
       <div className="d-flex gap-3 mb-5">
-        <button className="btn btn-success btn-lg" onClick={handleSave} disabled={isSaveDisabled}>
+        <button className="btn btn-success btn-lg" disabled={isSaveDisabled}>
           Save Changes
         </button>
         <button className="btn btn-danger btn-lg" onClick={handleDiscard}>

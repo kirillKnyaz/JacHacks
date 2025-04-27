@@ -27,10 +27,10 @@ function App() {
             <HomePage />
           </ProtectedRoute>}/>
           <Route path="/logout" element={<div className="m-2">You have been logged out!</div>} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/donation" element={<DonationPage />} />
+          <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+          <Route path="/donation" element={<ProtectedRoute><DonationPage /></ProtectedRoute>} />
           <Route path="/selectedOrgs" element={<SelectedOrgsPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Route>
       </Routes>
       </div>

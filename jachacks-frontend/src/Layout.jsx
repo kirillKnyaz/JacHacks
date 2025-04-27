@@ -32,8 +32,12 @@ function Layout() {
 
       {/* Show user email below header */}
       {isAuthenticated && (
-        <div className="d-flex justify-content-end me-3 trsp-bg">
-          <div>{user.email}</div>
+        <div className="d-flex justify-content-end trsp-bg" style={{backgroundColor: 'rgba(255, 255, 255, 0.3)'}}>
+          <div className="d-flex align-items-center me-3">
+            <FontAwesomeIcon icon={faCircle} className="text-success me-2" />
+            <span className="text-muted">Logged in as:</span>
+          </div>
+          <div className='me-3'>{user.email}</div>
         </div>
       )}
 
