@@ -9,6 +9,7 @@ import Layout from "./Layout";
 import HomePage from "./HomePage";
 import Quiz from "./Quiz";
 import DonationPage from "./DonationPage";
+import SelectedOrgsPage from "./SelectedOrgsPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/logout" element={<div className="m-2">You have been logged out!</div>} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/donation" element={<DonationPage />} />
+          <Route path="/selectedOrgs" element={<SelectedOrgsPage />} />
         </Route>
       </Routes>
       </div>
