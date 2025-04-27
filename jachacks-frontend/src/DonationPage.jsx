@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import useAuthApi from './assets/api';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from 'react-router-dom';
 
 function DonationPage() {
   const { user } = useAuth0();
+  const navigate = useNavigate();
 
   const [donationAmount, setDonationAmount] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -42,6 +44,7 @@ function DonationPage() {
     authApi.post('/donation', donationData).then((response) => {
       setPaymentStatus(response.data.message);
       console.log("Donation successful:", response.data);
+      navigate("/thank-you")
     }).catch((error) => {
       console.error("Error processing donation:", error);
       setPaymentStatus("An error occurred while processing your donation.");
