@@ -28,4 +28,8 @@ public class UserService {
 
         return new UserDTO(user);
     }
+
+    public static UserEntity getUserByAuth0Id(String auth0Id) {
+        return userRepository.findByAuth0Id(auth0Id).orElse(null);
+    }
 }
