@@ -13,13 +13,31 @@ function Layout() {
     <>
       <header className="d-flex justify-content-between align-items-center header p-2 header-bg text-black">
         {/* LEFT side: Home Button */}
-        <div>
-          <Link to="/" className="btn btn-home">
-            <h3>Charity Match</h3>
-          </Link>
-        </div>
+          <div className="dropdown">
+            <button
+              className="btn btn-home dropdown-toggle"
+              type="button"
+              id="dropdownMenuButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <h3>Charity Match</h3>
+            </button>
+            <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li>
+                <Link to="/donation" className="dropdown-item">
+            Donate
+                </Link>
+              </li>
+              <li>
+                <Link to="/quiz" className="dropdown-item">
+            Quiz
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-        {/* RIGHT side: Profile + Login/Logout */}
+          {/* RIGHT side: Profile + Login/Logout */}
         <div className="d-flex align-items-center gap-2">
           {isAuthenticated && (
             <Link to="/profile" className="btn btn-primary">

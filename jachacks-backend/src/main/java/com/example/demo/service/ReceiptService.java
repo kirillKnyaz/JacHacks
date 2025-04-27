@@ -40,10 +40,7 @@ public class ReceiptService {
 
         // Convert ReceiptEntities to ReceiptDTOs for the response
         return receipts.stream()
-                .map(receipt -> new ReceiptDTO(
-                        receipt.getUser().getName(),
-                        receipt.getOrganization().getName(),
-                        receipt.getAmount()))
+                .map(receipt -> new ReceiptDTO(receipt))
                 .collect(Collectors.toList());
     }
 
@@ -56,10 +53,7 @@ public class ReceiptService {
 
         // Convert ReceiptEntities to ReceiptDTOs for the response
         return receipts.stream()
-                .map(receipt -> new ReceiptDTO(
-                        receipt.getUser().getName(),
-                        receipt.getOrganization().getName(),
-                        receipt.getAmount()))
+                .map(ReceiptDTO::new)
                 .collect(Collectors.toList());
     }
 }
