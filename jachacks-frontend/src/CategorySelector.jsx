@@ -3,12 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Importez le CSS de Bootstrap
 
 function CategorySelector({ categories, selectedCategories, setSelectedCategories, loading }) {
 
-  console.log("selectedCategories", selectedCategories);
-
   const handleCategoryClick = (category) => {
     if (isCategorySelected(category)) {
       // Si la catégorie est déjà sélectionnée, on la retire de la liste
-      console.log("category already selected", category);
       setSelectedCategories(selectedCategories.filter((c) => c.id !== category.id));
     } else if (selectedCategories.length < 5) {
       // Si moins de 5 catégories sont sélectionnées, on l'ajoute
@@ -25,7 +22,6 @@ function CategorySelector({ categories, selectedCategories, setSelectedCategorie
 
   return (
     <div>
-      <h4>Choose up to 5:</h4>
       <div className="d-flex flex-wrap gap-2">
         {!loading ? <>{categories.map((category) => (
           <button

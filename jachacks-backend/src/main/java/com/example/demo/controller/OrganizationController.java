@@ -2,12 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.OrganizationEntity;
 import com.example.demo.repository.OrganizationRepository;
+import com.example.demo.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -16,6 +18,19 @@ public class OrganizationController {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    // Get top matching organizations for a user
+    @GetMapping("/top-matching/{userAuth0Id}")
+    public ResponseEntity<Map<String,Object>> getTopMatchingOrganizations(@PathVariable String userAuth0Id) {
+        try {
+            List<OrganizationEntity> organizations = OrganizationService.getTopMatchingOrganizations(userAuth0Id);
+            return ResponseEntity.ok(Map.of(
+                    "organizations", organizations
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     // Create or update an organization
     @PostMapping

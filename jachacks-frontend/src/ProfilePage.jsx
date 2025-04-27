@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CategorySelector from './CategorySelector';
 import axios from 'axios';
 import useAuthApi from './assets/api.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRotateForward, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 function ProfilePage() {
-  const { user } = useAuth0();
+  const {user} = useAuth0();
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [saveInterestsLoading, setSaveInterestsLoading] = useState(false);
+  
+  const [topOrganizations, setTopOrganizations] = useState([]);
+  const [topOrganizationsLoading, setTopOrganizationsLoading] = useState(true);
 
   const authApi = useAuthApi();
 
@@ -32,10 +37,21 @@ function ProfilePage() {
     });
   }, []);
 
-  const initialOrganizations = [
-    { name: 'Green Planet', description: 'Protecting the environment.' },
-    { name: 'Education for All', description: 'Accessible education worldwide.' },
-  ];
+  useEffect(() => {
+    reloadOrganizations();
+  }, []);
+
+  const reloadOrganizations = () => {
+    setTopOrganizationsLoading(true);
+    axios.get(`http://localhost:8080/public/organization/top-matching/${user.sub}`).then((response) => {
+      console.log("Top organizations:", response.data);
+      setTopOrganizations(response.data.organizations);
+    }).catch((error) => {
+      console.error("Error fetching top organizations:", error);
+    }).finally(() => {
+      setTopOrganizationsLoading(false);
+    });
+  }
 
   const initialSuggestedOrganizations = [
     { name: 'Health Heroes', description: 'Supporting healthcare initiatives.' },
@@ -43,39 +59,11 @@ function ProfilePage() {
     { name: 'Tech for Good', description: 'Using technology for positive impact.' },
   ];
 
-  const [organizations, setOrganizations] = useState(initialOrganizations);
   const [suggestedOrganizations, setSuggestedOrganizations] = useState(initialSuggestedOrganizations);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentFrequency, setPaymentFrequency] = useState('');
   const [savedPaymentAmount, setSavedPaymentAmount] = useState('');
   const [savedPaymentFrequency, setSavedPaymentFrequency] = useState('');
-
-  const toggleCategory = (category) => {
-    if (preferences.includes(category)) {
-      setPreferences(preferences.filter((c) => c !== category));
-    } else {
-      if (preferences.length < 5) {
-        setPreferences([...preferences, category]);
-      } else {
-        alert("You can only select up to 5 preferences.");
-      }
-    }
-  };
-
-  const removeOrganization = (orgName) => {
-    const orgToRemove = organizations.find(org => org.name === orgName);
-    if (orgToRemove) {
-      setOrganizations(organizations.filter(org => org.name !== orgName));
-      setSuggestedOrganizations([...suggestedOrganizations, orgToRemove]);
-    }
-  };
-
-  const addOrganization = (org) => {
-    if (!organizations.find(o => o.name === org.name)) {
-      setOrganizations([...organizations, org]);
-      setSuggestedOrganizations(suggestedOrganizations.filter(o => o.name !== org.name));
-    }
-  };
 
   const handleSaveInterests = () => {
     setSaveInterestsLoading(true);
@@ -122,7 +110,7 @@ function ProfilePage() {
       {/* (rest of the page remains the same) */}
 
       <div className="card p-4 mb-4">
-        <h4>Preferences (0/5 selected)</h4>
+        <h4>Your causes ({selectedCategories.length}/5 selected)</h4>
         <div className="d-flex flex-wrap gap-2">
           <CategorySelector 
           categories={categories}
@@ -132,32 +120,41 @@ function ProfilePage() {
           />
         </div>
         <div className='d-flex align-items-center mt-3'>
-          <button className='btn btn-primary' style={{width:"max-content"}} onClick={handleSaveInterests}>Save Prefernces</button>
+          <button className='btn btn-success' style={{width:"max-content"}} onClick={handleSaveInterests}>Save</button>
           {saveInterestsLoading && <div className="spinner-border text-primary ms-2" role="status"/>}
         </div>
-
       </div>
 
       <div className="card p-4 mb-4">
-        <h4>Assigned Organizations</h4>
-        {organizations.length > 0 ? (
-          <ul className="list-group">
-            {organizations.map((org) => (
+        <div className='d-flex justify-content-between mb-2'>
+          <h4>Your top Matches</h4>
+          <button className='btn' onClick={reloadOrganizations}>
+            {topOrganizationsLoading ? <FontAwesomeIcon icon={faSpinner} spin/> : <FontAwesomeIcon icon={faArrowRotateForward}/>}
+          </button>
+        </div>
+      
+        <ul className="list-group  overflow-hidden">
+          {topOrganizationsLoading ? <>
+            {Array.from({ length: 3 }, (_, index) => {
+                return (<li className={`placeholder-wave p-0 ${index < 2 ? "mb-1" : ""}`} style={{height: "4rem"}} key={index}>
+                <div style={{height:"100%", width: "100%", backgroundColor: "#0d6dfc"}} className='placeholder m-0'></div>
+                </li>);
+            })}
+          </> : <>
+            {topOrganizations.map((org) => 
               <li key={org.name} className="list-group-item d-flex justify-content-between align-items-center">
                 <div>
                   <h5>{org.name}</h5>
                   <small>{org.description}</small>
                 </div>
-                <button className="btn btn-sm btn-danger" onClick={() => removeOrganization(org.name)}>Remove</button>
+                <button className="btn btn-sm btn-danger">Remove</button>
               </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No organizations assigned yet.</p>
-        )}
+            )}
+          </>}
+        </ul>
       </div>
 
-      <div className="card p-4 mb-4">
+     {/* <div className="card p-4 mb-4">
         <h4>Suggested Organizations</h4>
         {suggestedOrganizations.length > 0 ? (
           <ul className="list-group">
@@ -167,17 +164,17 @@ function ProfilePage() {
                   <h5>{org.name}</h5>
                   <small>{org.description}</small>
                 </div>
-                <button className="btn btn-sm btn-primary" onClick={() => addOrganization(org)}>Add</button>
+                <button className="btn btn-sm btn-primary">Add</button>
               </li>
             ))}
           </ul>
         ) : (
           <p>No suggested organizations available.</p>
         )}
-      </div>
+      </div> */}
 
       <div className="card p-4 mb-4">
-        <h4>Payment Information</h4>
+        <h4>Donations:</h4>
         <div className="mb-3">
           <label htmlFor="paymentAmount" className="form-label">Donation Amount (CAD):</label>
           <input
@@ -215,15 +212,6 @@ function ProfilePage() {
             You will donate <strong>${paymentAmount}</strong> <strong>{paymentFrequency}</strong>.
           </div>
         )}
-      </div>
-
-      <div className="d-flex gap-3 mb-5">
-        <button className="btn btn-success btn-lg" disabled={isSaveDisabled}>
-          Save Changes
-        </button>
-        <button className="btn btn-danger btn-lg" onClick={handleDiscard}>
-          Discard Changes
-        </button>
       </div>
 
       <br />
