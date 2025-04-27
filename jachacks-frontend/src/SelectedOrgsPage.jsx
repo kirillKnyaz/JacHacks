@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function SelectedOrgsPage() {
-  const SelectedOrgs = [
-    { name: 'Animal Support Montreal', description: 'Helps and protects animals in the region.' },
-    { name: 'Culture for All Quebec', description: 'Promotes access to culture for all citizens.' },
-    { name: 'Young Leaders of Today', description: 'Develops the potential of young leaders.' },
-  ];
+  const { user } = useAuth0(); // Assure-toi que tu as accès à l'utilisateur ici
 
-  const SuggestedOrgs = [
-    { name: 'Green Environment Canada', description: 'Acts for the preservation of our environment.' },
-    { name: 'Local Food Aid', description: 'Provides meals to people in need.' },
-    { name: 'Urban Art and Creativity', description: 'Encouraging artistic expression in urban areas.' },
-    { name: 'Health for Children', description: 'Improving the health and well-being of children.' },
-    { name: 'Volunteers in Action', description: 'Organizes community volunteering initiatives.' },
-  ];
+  useEffect(() => {
+    reloadOrganizations();
+  }, []);
 
-  const [selectedOrganizations, setSelectedOrganizations] = useState(SelectedOrgs);
-  const [otherOrgs, setOtherOrgs] = useState(SuggestedOrgs);
+  const reloadOrganizations = () => {
+    setTopOrganizationsLoading(true);
+    axios.get(`http://localhost:8080/public/organization/top-matching/${user.sub}`).then((response) => {
+      console.log("Top organizations:", response.data);
+      setTopOrganizations(response.data.organizations);
+    }).catch((error) => {
+      console.error("Error fetching top organizations:", error);
+    }).finally(() => {
+      setTopOrganizationsLoading(false);
+    });
+  }
+
+  const [topOrganizations, setTopOrganizations] = useState([]);
+  const [topOrganizationsLoading, setTopOrganizationsLoading] = useState(true);
+
+  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
+  const [otherOrgs, setOtherOrgs] = useState([]);
 
   const handleAddToMainListDirectly = (orgToAdd) => {
     if (!selectedOrganizations.some(org => org.name === orgToAdd.name)) {
@@ -38,7 +47,7 @@ function SelectedOrgsPage() {
   return (
     <div className="container mt-5">
       <h2>Selected Organizations</h2>
-      {selectedOrganizations.length === 0 ? (
+      {topOrganizations.length === 0 ? (
         <p>No organization has been selected yet.</p>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">

@@ -19,18 +19,7 @@ public class OrganizationController {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    // Get top matching organizations for a user
-    @GetMapping("/top-matching/{userAuth0Id}")
-    public ResponseEntity<Map<String,Object>> getTopMatchingOrganizations(@PathVariable String userAuth0Id) {
-        try {
-            List<OrganizationEntity> organizations = OrganizationService.getTopMatchingOrganizations(userAuth0Id);
-            return ResponseEntity.ok(Map.of(
-                    "organizations", organizations
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+
 
     // Create or update an organization
     @PostMapping

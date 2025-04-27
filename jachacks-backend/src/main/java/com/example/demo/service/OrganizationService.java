@@ -23,4 +23,9 @@ public class OrganizationService {
         }
         return organizationRepository.findTop5MatchingOrganizationsByUser(user.getId());
     }
+
+    public static OrganizationEntity getOrganizationById(Long organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new RuntimeException("Organization not found"));
+    }
 }

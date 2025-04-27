@@ -1,12 +1,15 @@
 import React, { use, useEffect, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import CategorySelector from './CategorySelector'; // Assure-toi que le chemin est correct
 import 'bootstrap/dist/css/bootstrap.min.css'; // Si ce n'est pas déjà importé
 import DonationPage from './DonationPage';
 import axios from 'axios';
 import useAuthApi from './assets/api';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function Quiz() {
+  const { user } = useAuth0(); // Assure-toi que tu as accès à l'utilisateur ici
+
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
@@ -15,13 +18,6 @@ function Quiz() {
   const authApi = useAuthApi();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // from the db
-    //get all user interests
-    // assign to selected categories
-  }, []);
-
 
   useEffect(() => {
     axios.get('http://localhost:8080/public/interests/all').then((response) => {
@@ -33,6 +29,14 @@ function Quiz() {
       setCategoriesLoading(false);
     });
   }, []);
+
+    useEffect(() => {
+      authApi.get(`/user-interests/get/${user.sub}`).then((response) => {
+        setSelectedCategories(response.data.interests);
+      }).catch((error) => {
+        console.error("Error fetching user interests:", error);
+      });
+    }, []);
 
   const confirmCategoriesSelection = () => {
     setSaveInterestsLoading(true);
@@ -56,8 +60,11 @@ function Quiz() {
 
   return (<div className="container d-flex flex-column justify-content-center align-items-center min-vh-100">
     <div className="container mt-4">
-      <h1>Quiz</h1>
-      <p>choose up to 5 category, they will help us determine wich charity is right for you!</p>
+      <h1>What causes matter to you?</h1>
+      <p>choose up to 5 categories, they will help us determine wich charity is right for you!</p>
+      {selectedCategories.length > 0 && <>
+        <p>{selectedCategories.length}/5 selected</p>
+      </>}
       <CategorySelector
         categories={categories}
         selectedCategories={selectedCategories}

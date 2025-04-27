@@ -17,6 +17,9 @@ function ProfilePage() {
   const [topOrganizations, setTopOrganizations] = useState([]);
   const [topOrganizationsLoading, setTopOrganizationsLoading] = useState(true);
 
+  const [userSavedOrganizations, setUserSavedOrganizations] = useState([]);
+  const [userSavedOrganizationsLoading, setUserSavedOrganizationsLoading] = useState(true);
+
   const authApi = useAuthApi();
 
   useEffect(() => {
@@ -38,13 +41,12 @@ function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    reloadOrganizations();
+    reloadTopOrganizations();
   }, []);
 
-  const reloadOrganizations = () => {
+  const reloadTopOrganizations = () => {
     setTopOrganizationsLoading(true);
-    axios.get(`http://localhost:8080/public/organization/top-matching/${user.sub}`).then((response) => {
-      console.log("Top organizations:", response.data);
+    authApi.get(`/user-organization/top-matching/${user.sub}`).then((response) => {
       setTopOrganizations(response.data.organizations);
     }).catch((error) => {
       console.error("Error fetching top organizations:", error);
@@ -53,13 +55,38 @@ function ProfilePage() {
     });
   }
 
-  const initialSuggestedOrganizations = [
-    { name: 'Health Heroes', description: 'Supporting healthcare initiatives.' },
-    { name: 'Save the Forest', description: 'Preserving natural habitats.' },
-    { name: 'Tech for Good', description: 'Using technology for positive impact.' },
-  ];
+  useEffect(() => {
+    authApi.get(`/user-organization/get/${user.sub}`).then((response) => {
+      console.log("User saved organizations:", response.data);
+      setUserSavedOrganizations(response.data.organizations);
+    }).catch((error) => {
+      console.error("Error fetching user saved organizations:", error);
+    }).finally(() => {
+      setUserSavedOrganizationsLoading(false);
+    });
+  }, [])
 
-  const [suggestedOrganizations, setSuggestedOrganizations] = useState(initialSuggestedOrganizations);
+  const saveOrganization = (org) => {
+    console.log("Saving organization:", org);
+
+    authApi.post('/user-organization/add', {organizationId: org.id}).then((response) => {
+      console.log("Organization saved successfully:", response.data);
+      setUserSavedOrganizations([...userSavedOrganizations, org]);
+    }).catch((error) => {
+      console.error("Error saving organization:", error);
+    });
+  }
+
+  const removeOrganization = (org) => {
+    console.log("Removing organization:", org);
+    authApi.delete('/user-organization/remove', {data:{organizationId: org.id}}).then((response) => {
+      console.log("Organization removed successfully:", response.data);
+      setUserSavedOrganizations(userSavedOrganizations.filter((o) => o.id !== org.id));
+    }).catch((error) => {
+      console.error("Error removing organization:", error);
+    });
+  }
+
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentFrequency, setPaymentFrequency] = useState('');
   const [savedPaymentAmount, setSavedPaymentAmount] = useState('');
@@ -75,11 +102,6 @@ function ProfilePage() {
     }).finally(() => {
       setSaveInterestsLoading(false);
     });
-  };
-
-  const handleDiscard = () => {
-    setPaymentAmount(savedPaymentAmount);
-    setPaymentFrequency(savedPaymentFrequency);
   };
 
   const isSaveDisabled = !paymentAmount || parseFloat(paymentAmount) < 1 || !paymentFrequency;
@@ -126,9 +148,32 @@ function ProfilePage() {
       </div>
 
       <div className="card p-4 mb-4">
+        <h4>Your Organizations</h4>
+        <ul className='list-group overflow-hidden'>
+          {userSavedOrganizationsLoading ? <>
+            {Array.from({ length: 3 }, (_, index) => {
+              return (<li className={`placeholder-wave p-0 ${index < 2 ? "mb-1" : ""}`} style={{height: "4rem"}} key={index}>
+              <div style={{height:"100%", width: "100%", backgroundColor: "#0d6dfc"}} className='placeholder m-0'></div>
+              </li>);
+            })}
+          </> : <>
+            {userSavedOrganizations.map((org) => 
+              <li key={org.name} className="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <h5>{org.name}</h5>
+                  <small>{org.description}</small>
+                </div>
+                <button className="btn btn-sm btn-outline-danger" onClick={() => removeOrganization(org)}>-</button>
+              </li>
+            )}
+          </>}
+        </ul>
+      </div>
+
+      <div className="card p-4 mb-4">
         <div className='d-flex justify-content-between mb-2'>
-          <h4>Your top Matches</h4>
-          <button className='btn' onClick={reloadOrganizations}>
+          <h4>Your Top Matches</h4>
+          <button className='btn' onClick={reloadTopOrganizations}>
             {topOrganizationsLoading ? <FontAwesomeIcon icon={faSpinner} spin/> : <FontAwesomeIcon icon={faArrowRotateForward}/>}
           </button>
         </div>
@@ -147,31 +192,12 @@ function ProfilePage() {
                   <h5>{org.name}</h5>
                   <small>{org.description}</small>
                 </div>
-                <button className="btn btn-sm btn-danger">Remove</button>
+                <button className="btn btn-sm btn-outline-primary" onClick={() => saveOrganization(org)}>+</button>
               </li>
             )}
           </>}
         </ul>
       </div>
-
-     {/* <div className="card p-4 mb-4">
-        <h4>Suggested Organizations</h4>
-        {suggestedOrganizations.length > 0 ? (
-          <ul className="list-group">
-            {suggestedOrganizations.map((org) => (
-              <li key={org.name} className="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <h5>{org.name}</h5>
-                  <small>{org.description}</small>
-                </div>
-                <button className="btn btn-sm btn-primary">Add</button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No suggested organizations available.</p>
-        )}
-      </div> */}
 
       <div className="card p-4 mb-4">
         <h4>Donations:</h4>
@@ -212,6 +238,10 @@ function ProfilePage() {
             You will donate <strong>${paymentAmount}</strong> <strong>{paymentFrequency}</strong>.
           </div>
         )}
+
+        <button className="btn btn-primary" onClick={() => {setSavedPaymentAmount(paymentAmount); setSavedPaymentFrequency(paymentFrequency);}} disabled={isSaveDisabled}>
+          Save Donation
+        </button>
       </div>
 
       <br />
