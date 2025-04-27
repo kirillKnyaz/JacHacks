@@ -30,7 +30,7 @@ function App() {
           <Route path="/logout" element={<LogoutPage/>} />
           <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
           <Route path="/donation" element={<ProtectedRoute><DonationPage /></ProtectedRoute>} />
-          <Route path="/selectedOrgs" element={<SelectedOrgsPage />} />
+          <Route path="/selectedOrgs" element={<ProtectedRoute><SelectedOrgsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Route>
       </Routes>
