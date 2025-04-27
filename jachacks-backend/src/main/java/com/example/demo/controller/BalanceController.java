@@ -1,37 +1,63 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.OrganizationEntity;
+import com.example.demo.entity.ReceiptEntity;
 import com.example.demo.entity.UserEntity;
-import com.example.demo.service.UserService;
+import com.example.demo.repository.OrganizationRepository;
+import com.example.demo.repository.ReceiptRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 
 @RestController
-@RequestMapping("/balance")
+@RequestMapping("/donation")
 public class BalanceController {
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
-    // Deposit money into user account
-    @PostMapping("/deposit")
-    public String depositBalance(@RequestParam Long userId, @RequestParam BigDecimal amount) {
-        userService.depositBalance(userId, amount);
-        return "Deposit successful!";
-    }
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
-    // Deposit money into user account
+    @Autowired
+    private ReceiptRepository receiptRepository;
+
+    // Donate to multiple organizations
     @PostMapping("/donate")
-    public String donateBalance(@RequestParam Long userId, @RequestParam Long organizationId , @RequestParam BigDecimal amount) {
-        userService.donateBalance(userId,organizationId, amount);
-        return "Donate successful!";
-    }
+    public String donateToOrganizations(
+            @RequestParam Long userId,
+            @RequestParam List<Long> organizationIds,
+            @RequestParam BigDecimal totalAmount) {
 
-    // Get current balance
-    @GetMapping("/{userId}")
-    public BigDecimal getBalance(@PathVariable Long userId) {
-        UserEntity user = userService.getUserById(userId);
-        return user.getBalance();
+        if (organizationIds == null || organizationIds.isEmpty()) {
+            return "Error: No organizations provided.";
+        }
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        BigDecimal splitAmount = totalAmount.divide(
+                BigDecimal.valueOf(organizationIds.size()),
+                2, RoundingMode.HALF_UP);
+
+
+        for (Long orgId : organizationIds) {
+            OrganizationEntity organization = organizationRepository.findById(orgId)
+                    .orElseThrow(() -> new RuntimeException("Organization not found"));
+
+            ReceiptEntity receipt = new ReceiptEntity();
+            receipt.setUser(user);
+            receipt.setOrganization(organization);
+            receipt.setAmount(splitAmount);
+
+            receiptRepository.save(receipt);
+        }
+
+        return "Donation successful!";
     }
 }
