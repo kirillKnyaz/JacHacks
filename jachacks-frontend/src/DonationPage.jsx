@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import useAuthApi from './assets/api';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function DonationPage() {
+  const { user } = useAuth0();
+
   const [donationAmount, setDonationAmount] = useState('');
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState('');
   const [isReady, setIsReady] = useState(false); // Use state for isReady
+
+  const authApi = useAuthApi();
 
   const handleAmountChange = (event) => {
     setDonationAmount(event.target.value);
@@ -24,18 +31,23 @@ function DonationPage() {
   }
 
   const handleDonate = () => {
-    // Simulate payment processing
-    setPaymentStatus('Processing...');
-    setTimeout(() => {
-      // Simulate a response after a few seconds
-      const isPaymentSuccessful = Math.random() < 0.8; // 80% chance of success (for simulation)
-      if (isPaymentSuccessful) {
-        setPaymentStatus('Thank you for your donation! Payment successful.');
-        setDonationAmount(''); // Reset the amount
-      } else {
-        setPaymentStatus('Payment failed. Please try again.');
-      }
-    }, 2000); // Simulate a 2-second delay
+    setPaymentLoading(true);
+
+    const donationData = {
+      totalAmount: parseFloat(donationAmount),
+      userAuth0Id: user.sub, 
+    }
+
+    console.log("Donation data:", donationData);
+    authApi.post('/donation', donationData).then((response) => {
+      setPaymentStatus(response.data.message);
+      console.log("Donation successful:", response.data);
+    }).catch((error) => {
+      console.error("Error processing donation:", error);
+      setPaymentStatus("An error occurred while processing your donation.");
+    }).finally(() => {
+      setPaymentLoading(false);
+    });
   };
 
   return (
@@ -89,7 +101,7 @@ function DonationPage() {
       </div>
     </div>
 
-
+    <div className='d-flex align-items-center mt-3'>
       <button
         className="btn btn-primary btn-lg"
         onClick={handleDonate}
@@ -97,6 +109,8 @@ function DonationPage() {
       >
         Make a Donation
       </button>
+      {paymentLoading && <div className="spinner-border text-primary ms-2" role="status" />}
+    </div>
 
       {paymentStatus && (
         <div className="mt-3 alert alert-info">{paymentStatus}</div>

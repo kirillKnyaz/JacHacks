@@ -7,12 +7,15 @@ import com.example.demo.entity.UserEntity;
 import com.example.demo.repository.OrganizationRepository;
 import com.example.demo.repository.ReceiptRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.BalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/donation")
@@ -28,35 +31,13 @@ public class BalanceController {
     private ReceiptRepository receiptRepository;
 
     // Donate to multiple organizations
-    @PostMapping("/donate")
-    public String donateToOrganizations(@RequestBody DonationDTO donationDTO) {
-        List<Long> organizationIds = donationDTO.getOrganizationId();
-        BigDecimal totalAmount = donationDTO.getTotalAmount();
-
-        if (organizationIds == null || organizationIds.isEmpty()) {
-            return "Error: No organizations provided.";
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> donateToOrganizations(@RequestBody DonationDTO donationDTO) {
+        try {
+            BalanceService.donate(donationDTO);
+            return ResponseEntity.ok(Map.of("message", "Donation successful"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
-
-        UserEntity user = userRepository.findById(donationDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        BigDecimal splitAmount = totalAmount.divide(
-                BigDecimal.valueOf(organizationIds.size()),
-                2, RoundingMode.HALF_UP
-        );
-
-        for (Long orgId : organizationIds) {
-            OrganizationEntity organization = organizationRepository.findById(orgId)
-                    .orElseThrow(() -> new RuntimeException("Organization not found"));
-
-            ReceiptEntity receipt = new ReceiptEntity();
-            receipt.setUser(user);
-            receipt.setOrganization(organization);
-            receipt.setAmount(splitAmount);
-
-            receiptRepository.save(receipt);
-        }
-
-        return "Donation successful!";
     }
 }

@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class DonationDTO {
 
-    private Long userId;
-    private List<Long> organizationId;
+    private String userAuth0Id;
     private BigDecimal totalAmount;
 }
