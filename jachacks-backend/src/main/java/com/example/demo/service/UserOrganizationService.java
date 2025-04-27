@@ -58,7 +58,8 @@ public class UserOrganizationService {
     }
 
     public static void addOrganization(UserEntity user, Long organizationId) {
-        if (userOrganizationRepository.findByUserAndOrganization(user, OrganizationService.getOrganizationById(organizationId)) != null) {
+        if (!userOrganizationRepository.findByUserAndOrganization(user, OrganizationService.getOrganizationById(organizationId)).isEmpty()) {
+            System.out.println("User already has this organization");
             return;
         }
 
