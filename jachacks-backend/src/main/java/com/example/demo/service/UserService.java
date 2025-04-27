@@ -1,11 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.DTO.UserDTO;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.entity.OrganizationEntity;
 import com.example.demo.entity.ReceiptEntity;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.OrganizationRepository;
 import com.example.demo.repository.ReceiptRepository;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,9 +16,9 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final OrganizationRepository organizationRepository;
-    private final ReceiptRepository receiptRepository;
+    private static UserRepository userRepository;
+    private static OrganizationRepository organizationRepository;
+    private static ReceiptRepository receiptRepository;
 
     public UserService(UserRepository userRepository, OrganizationRepository organizationRepository, ReceiptRepository receiptRepository) {
         this.userRepository = userRepository;
@@ -54,8 +56,8 @@ public class UserService {
         receiptRepository.save(receipt);
 
         // Optionally, you can also update the organization's balance if necessary
-        organization.setBalance(organization.getBalance().add(amount));
-        organizationRepository.save(organization);
+//        organization.setBalance(organization.getBalance().add(amount));
+//        organizationRepository.save(organization);
     }
 
     public UserEntity getUserById(Long userId) {
@@ -63,7 +65,21 @@ public class UserService {
         return userOptional.orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public UserEntity getUserByAuth0Id(String auth0Id) {
+    public static UserEntity getUserByAuth0Id(String auth0Id) {
         return userRepository.findByAuth0Id(auth0Id).orElse(null);
+    }
+
+    public static UserDTO registerUser(Jwt jwt) {
+        String auth0Id = jwt.getSubject();
+        String email = jwt.getClaimAsString("email");
+
+        UserEntity user = userRepository.findByAuth0Id(auth0Id).orElseGet(() -> {
+            UserEntity newUser = new UserEntity();
+            newUser.setAuth0Id(auth0Id);
+            newUser.setEmail(email);
+            return userRepository.save(newUser);
+        });
+
+        return new UserDTO(user);
     }
 }

@@ -37,10 +37,17 @@ function CategorySelector({ categories, selectedCategories, setSelectedCategorie
             {category.name}
           </button>
         ))}</> : <>
-          {Array.from({ length: 11 }, (_, index) => (
-            <button className='btn btn-outline-primary disabled placelhoder' style={{height: "38px", width: "4rem"}} key={index}>
-            </button>
-          ))}
+          {Array.from({ length: 11 }, (_, index) => {
+            const randomOffset = Math.floor(Math.random() * 20) + 1; // Random number between 1 and 20
+            return (<div className="placeholder-wave" key={index}>
+              <button
+                className="btn btn-primary disabled placeholder"
+                style={{ height: "38px", width: `${100 + randomOffset}px` }}
+                key={index}
+              >
+              </button>
+            </div>);
+          })}
         </>}
       </div>
     </div>

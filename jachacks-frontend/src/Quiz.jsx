@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import CategorySelector from './CategorySelector'; // Assure-toi que le chemin est correct
 import 'bootstrap/dist/css/bootstrap.min.css'; // Si ce n'est pas déjà importé
@@ -10,8 +10,16 @@ function Quiz() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [saveInterestsLoading, setSaveInterestsLoading] = useState(false);
 
   const authApi = useAuthApi();
+
+  useEffect(() => {
+    // from the db
+    //get all user interests
+    // assign to selected categories
+  }, []);
+
 
   useEffect(() => {
     axios.get('http://localhost:8080/public/interests/all').then((response) => {
@@ -25,6 +33,7 @@ function Quiz() {
   }, []);
 
   const confirmCategoriesSelection = () => {
+    setSaveInterestsLoading(true);
     if (selectedCategories.length > 0) {
       console.log("Selected categories:", selectedCategories);
 
@@ -35,15 +44,16 @@ function Quiz() {
         // Rediriger vers la page de donation ou faire autre chose
       }).catch((error) => {
         console.error("Error adding interests:", error);
+      }).finally(() => {
+        setSaveInterestsLoading(false);
       });
     } else {
       alert("Please select at least one category.");
     }
   }
 
-  return (
-    <div className="container d-flex flex-column justify-content-center align-items-center min-vh-100">
-        <div className="container mt-4">
+  return (<div className="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+    <div className="container mt-4">
       <h1>Quiz</h1>
       <p>choose up to 5 category, they will help us determine wich charity is right for you!</p>
       <CategorySelector
@@ -61,16 +71,22 @@ function Quiz() {
               <li key={category}>{category}</li>
             ))}
           </ul>
-        </div>
+        </di
+        v>
       )} */}
-      <button className="btn btn-primary mt-3" onClick={confirmCategoriesSelection}>Confirm</button>
+      <div className='d-flex align-items-center mt-3'>
+
+        <button className="btn btn-primary" onClick={confirmCategoriesSelection}>Confirm</button>
+        {saveInterestsLoading && <div className="spinner-border text-primary ms-2" role="status"/>}
+      </div>
+
       <br />
-      <Link to={"/donation"} className='btn btn-primary mt-3'>Temp Donation</Link>
-      <Link to={"/selectedOrgs"} className='btn btn-primary mt-3'>Temp SeleOrgs</Link>
+      <div className='mt-1'>
+        <Link to={"/donation"} className='btn btn-primary'>Temp Donation</Link>
+        <Link to={"/selectedOrgs"} className='btn btn-primary ms-2'>Temp SeleOrgs</Link>
+      </div>
     </div>
-    </div>
-    
-  );
+  </div>);
 }
 
 export default Quiz;

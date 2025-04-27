@@ -3,6 +3,8 @@ import { Link, Outlet } from 'react-router-dom'
 import LoginButton from './auth/LoginButton'
 import LogoutButton from './auth/LogoutButton'
 import { useAuth0 } from '@auth0/auth0-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircle } from '@fortawesome/free-solid-svg-icons'
 
 function Layout() {
   const {user, isAuthenticated} = useAuth0()
@@ -17,8 +19,9 @@ function Layout() {
         {isAuthenticated ? <LogoutButton/> : <LoginButton/>}
       </div>
     </header>
-    {isAuthenticated && <div className="d-flex justify-content-end me-3 trsp-bg">
-      <div>{user.email}</div>  
+    {isAuthenticated && <div className="d-flex justify-content-end align-items-center" style={{backgroundColor: "rgba(255, 255, 255, 0.2)"}}>
+      <FontAwesomeIcon icon={faCircle} className='me-2' style={{color: "green"}}/>
+      <div className='me-3'>{user.email}</div>  
     </div>}
 
     <Outlet />
